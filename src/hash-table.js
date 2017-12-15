@@ -10,15 +10,19 @@ class HashTable {
   }
 
   resize() {
-    this.limit *= 2;
-    const oldStorage = this.storage;
-    this.storage = new LimitedArray(this.limit);
-    oldStorage.each((bucket) => {
-      if (!bucket) return;
-      bucket.forEach((pair) => {
-        this.insert(pair[0], pair[1]);
-      });
-    });
+     }
+ 
+    let hash = 0;
+    let limit = this.limit;
+    let letter;
+    
+    for (var i = 0; i < str.length; i++) {
+      letter = str[i];
+      hash = (hash << 5) + letter.charCodeAt(0);
+      hash = (hash & hash) % limit;
+    }
+    
+    return hash;
   }
 
   capacityIsFull() {
@@ -34,14 +38,10 @@ class HashTable {
   // If no bucket has been created for that index, instantiate a new bucket and add the key, value pair to that new bucket
   // If the key already exists in the bucket, the newer value should overwrite the older value associated with that key
   insert(key, value) {
-    if (this.capacityIsFull()) this.resize();
-    const index = getIndexBelowMax(key.toString(), this.limit);
-    let bucket = this.storage.get(index) || [];
-
-    bucket = bucket.filter(item => item[0] !== key);
-    bucket.push([key, value]);
-    this.storage.set(index, bucket);
-  }
+   insert(key, value) {
+    let index = this.makeHash(key);
+    let bucket = this.storage[index];
+    let item = new Node(key, value);
   // Removes the key, value pair from the hash table
   // Fetch the bucket associated with the given key using the getIndexBelowMax function
   // Remove the key, value pair from the bucket
